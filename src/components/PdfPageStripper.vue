@@ -19,10 +19,7 @@
     <ul>
       <li v-for="item in pdfFiles" :key="item.id">
         {{ item.name }}
-        <a
-          v-if="item.result"
-          :download="'stripped-' + item.name"
-          :href="item.result"
+        <a v-if="item.result" :download="item.name" :href="item.result"
           >Download</a
         >
       </li>
@@ -76,7 +73,7 @@ export default defineComponent({
         const file = files.item(i);
         pdfFiles.value.push({
           id: "" + i,
-          name: file.name,
+          name: `stripped-${file.name}`,
         });
       }
 

@@ -1,0 +1,22 @@
+{
+  "name": "pdf-page-stripper",
+  "version": "0.0.1",
+  "author": {
+    "name": "Stefnotch",
+    "url": "https://github.com/stefnotch/"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "deploy": "vite build --base=/pdf-page-stripper/ && node utils/publish.js"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.11.2",
+    "vue": "^3.0.2"
+  },
+  "devDependencies": {
+    "vite": "^1.0.0-rc.6",
+    "@vue/compiler-sfc": "^3.0.2",
+    "gh-pages": "^3.1.0"
+  }
+}

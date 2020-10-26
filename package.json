@@ -5,6 +5,7 @@
     "name": "Stefnotch",
     "url": "https://github.com/stefnotch/"
   },
+  "license": "Unlicense",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

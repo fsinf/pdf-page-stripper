@@ -36,7 +36,7 @@ function usePdfLib() {
     const pdfFile = await PDFDocument.load(bytes);
     const pageLabels = pdfFile.catalog.get(PDFName.of("PageLabels"));
     if (!pageLabels) return;
-    const pageNumbers = (pageLabels as any)?.get(PDFName.of("Nums"))
+    const pageNumbers = (pageLabels as any)?.get?.(PDFName.of("Nums"))
       ?.array as any[];
     if (!pageNumbers) return;
 

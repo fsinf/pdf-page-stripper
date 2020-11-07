@@ -9,6 +9,8 @@ Other useful software for the TU Vienna can be found [here](https://wiki.fsinf.a
 Clone the repo, run `npm install` and then run `npm run dev` and you should be good to go.
 I quite appreciate issue reports or pull requests.
 
+<!-- Publishing to GitHub Pages: `npm run deploy` -->
+
 ## Credits
 
 Inspired by [Fulgen301's animationstrip](https://github.com/Fulgen301/animationstrip)

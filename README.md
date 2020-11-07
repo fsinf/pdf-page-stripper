@@ -1,6 +1,6 @@
-# [pdf-page-stripper](https://tuwien2020.github.io/pdf-page-stripper/)
+# [pdf-page-stripper](https://fsinf.github.io/pdf-page-stripper/)
 
-Strips useless stuff from TU Vienna PDFs. [View it online here](https://tuwien2020.github.io/pdf-page-stripper/)
+Strips useless stuff from TU Vienna PDFs. [View it online here](https://fsinf.github.io/pdf-page-stripper/)
 
 Other useful software for the TU Vienna can be found [here](https://wiki.fsinf.at/wiki/Useful_Software).
 

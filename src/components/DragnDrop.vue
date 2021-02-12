@@ -7,19 +7,18 @@
     @dragover.prevent
     @drop="drop"
   >
-    <label class="label" for="file">
-      Drag'n drop or <strong class="selectSpan">select</strong> PDF-files
-      here</label
-    >
-    <input
-      type="file"
-      name="file"
-      class="fileinput"
-      accept="application/pdf,.pdf"
-      multiple
-      @change="onChange()"
-      ref="file"
-    />
+    <label class="label">
+      Drag'n drop or <strong class="selectSpan">select</strong> PDF-files here
+      <input
+        type="file"
+        name="file"
+        class="fileinput"
+        accept="application/pdf,.pdf"
+        multiple
+        @change="onChange()"
+        ref="file"
+      />
+    </label>
   </div>
 </template>
 
@@ -72,6 +71,7 @@ export default defineComponent({
 
 .selectSpan:hover {
   cursor: pointer;
+  text-decoration: underline;
 }
 
 .fileinput {

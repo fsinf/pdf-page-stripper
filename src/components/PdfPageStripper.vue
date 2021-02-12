@@ -132,24 +132,27 @@ export default defineComponent({
     const processDone = ref<number>(0);
 
     async function onFilesSelected(files: FileList) {
+      processDone.value = 0.1;
       pdfFiles.value.length = 0;
       zipping.value.state = -1;
 
       if (files.length == 0) return;
 
-      for (
-        let i = 0;
-        i < files.length;
-        i++, processDone.value += 100 / (files.length + 1)
-      ) {
+      for (let i = 0; i < files.length; i++) {
         const file = files.item(i);
+        if (!file) continue;
 
         pdfFiles.value.push({
           id: "" + i,
           name: `stripped-${file.name}`,
         });
 
-        const strippedPdf = await pdfLib.stripPdf(await file.arrayBuffer());
+        const fileBytes = await file.arrayBuffer();
+        processDone.value = ((i + 0.3) / files.length) * 100;
+
+        const strippedPdf = await pdfLib.stripPdf(fileBytes);
+        processDone.value = ((i + 0.7) / files.length) * 100;
+
         if (strippedPdf) {
           const result = new Blob([await strippedPdf.save()], {
             type: "application/pdf",
@@ -160,6 +163,8 @@ export default defineComponent({
         } else {
           pdfFiles.value[i].name += " - found nothing to strip";
         }
+
+        processDone.value = ((i + 1) / files.length) * 100;
       }
 
       if (zipping.value.state === 0) {

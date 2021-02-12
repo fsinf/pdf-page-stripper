@@ -5,7 +5,7 @@
     <div class="card">
 
       <div :class="[processDone == 100 ? 'card__side--back_active' : '']" class="card__side card__side--back">
-        <DownloadArea :pdfFiles="pdfFiles" :zip="zipping" @reset="() => {processDone = 0; zipping = {result: '', size: 0, state: 1}}"/>
+        <DownloadArea :pdfFiles="pdfFiles" :zip="zipping" @reset="() => processDone = 0"/>
       </div>
 
       <div :class="[processDone == 100 ? 'card__side--front_active' : '', processDone > 0 ? 'toProgressbar' : '']" class="card__side card__side--front">

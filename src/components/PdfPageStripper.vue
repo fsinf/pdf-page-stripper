@@ -300,11 +300,9 @@ body {
 }
 
 .card__side--front_active {
-  background-color: "red";
   transform: rotateY(-180deg);
 }
 .card__side--back_active {
-  background-color: "red";
   transform: rotateY(0deg);
 }
 </style>

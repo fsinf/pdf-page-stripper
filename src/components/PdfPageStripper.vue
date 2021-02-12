@@ -5,10 +5,10 @@
     <div class="card">
 
       <div :class="[processDone == 100 ? 'card__side--back_active' : '']" class="card__side card__side--back">
-        <DownloadArea :pdfFiles="pdfFiles" :zip="zipping" @reset="() => processDone = 0"/>
+        <DownloadArea :pdfFiles="pdfFiles" :zip="zipping" @reset="() => {processDone = 0; zipping = {result: '', size: 0, state: 1}}"/>
       </div>
 
-      <div :class="[processDone == 100? 'card__side--front_active' : '', processDone > 0 ? 'toProgressbar' : '']" class="card__side card__side--front">
+      <div :class="[processDone == 100 ? 'card__side--front_active' : '', processDone > 0 ? 'toProgressbar' : '']" class="card__side card__side--front">
         <div class="progress-done" :class="[processDone == 0 ? 'hideProgressBar' : '']" :style="{'width': processDone + '%'}">
         </div>
         <DragnDrop :class="[processDone > 0 ? 'hideDragnDrop' : '']" @filesSelected="onFilesSelected" />
@@ -196,10 +196,8 @@ body {
 }
 .hideProgressBar {
   visibility: hidden;
-  display: block;
   position: absolute;
 }
-
 .hideDragnDrop{
   color: transparent;
 }
@@ -242,7 +240,6 @@ body {
   box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.15);
 }
 
-
 .card__side--back {
   background-color: #fff;
   transform: rotateY(180deg);
@@ -265,60 +262,6 @@ body {
 .card__side--back_active {
   background-color: 'red';
   transform: rotateY(0deg);
-}
-
-@media only screen and (max-width: 37.5em), only screen and (hover: none) {
-  .card {
-    height: auto;
-    border-radius: 3px;
-    background-color: #fff;
-    box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.15);
-  }
-  .card__side {
-    height: auto;
-    position: relative;
-    box-shadow: none;
-  }
-  .card__side--front {
-    clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
-  }
-  .card__side--back {
-    transform: rotateY(0);
-  }
-  .card:hover .card__side--front {
-    transform: rotateY(0);
-  }
-  .card__details {
-    padding: 3rem 2rem;
-  }
-  .card__details ul {
-    list-style: none;
-    width: 80%;
-    margin: 0 auto;
-  }
-  .card__details ul li {
-    text-align: center;
-    font-size: 1.8rem;
-    padding: 1rem;
-  }
-  .card__details ul li:not(:last-child) {
-    border-bottom: 1px solid #eee;
-  }
-  .card__theme {
-    position: relative;
-    top: 0;
-    left: 0;
-    transform: translate(0);
-    width: 100%;
-    padding: 5rem 4rem 1.5rem 4rem;
-    text-align: right;
-  }
-  .card__theme-box {
-    margin-bottom: 1.5rem;
-  }
-  .card__title {
-    font-size: 4rem;
-  }
 }
 
 </style>

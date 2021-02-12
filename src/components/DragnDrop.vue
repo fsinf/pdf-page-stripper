@@ -17,8 +17,8 @@ export default defineComponent({
   },
   methods: {
     onChange() {
-      const filelist = (this.$refs.file as HTMLInputElement).files;
-      console.log(filelist);
+      const fileElem = (this.$refs.file as HTMLInputElement);
+      const filelist = fileElem.files;
       this.$emit('filesSelected', filelist);
     },
     dragenter(e:DragEvent) {
@@ -28,7 +28,7 @@ export default defineComponent({
       this.isDragover = false;
     },
     drop(e:DragEvent) {
-      e.preventDefault();
+      e.preventDefault(); // prevent from open files in new tab
       this.isDragover = false;
       this.$refs.file.files = e.dataTransfer.files;
       this.onChange();

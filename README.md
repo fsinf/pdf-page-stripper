@@ -14,3 +14,5 @@ I quite appreciate issue reports or pull requests.
 ## Credits
 
 Inspired by [Fulgen301's animationstrip](https://github.com/Fulgen301/animationstrip)
+
+Awesome design by [Jozott00](https://github.com/Jozott00)

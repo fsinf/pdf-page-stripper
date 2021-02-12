@@ -166,6 +166,7 @@ export default defineComponent({
 
         processDone.value = ((i + 1) / files.length) * 100;
       }
+      processDone.value = 100;
 
       if (zipping.value.state === 0) {
         const res = await pdfLib.zipFiles(pdfFiles.value);
@@ -173,8 +174,6 @@ export default defineComponent({
         zipping.value.size = res.size;
         zipping.value.state = 1;
       }
-
-      processDone.value = 100;
     }
 
     return {

@@ -12,6 +12,10 @@
         Size: {{ Math.round(zip.size / 10000) / 100 }} mb
       </div>
     </a>
+    <a v-else-if="zip.state == 0" class="face-button">
+      <div class="face-primary">Loading .zip</div>
+      <div class="face-secondary">Loading...</div>
+    </a>
 
     <div style="max-height: calc(50vh - 123px); overflow: auto">
       <div class="card__details">

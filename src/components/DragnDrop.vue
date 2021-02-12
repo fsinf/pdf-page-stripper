@@ -1,45 +1,61 @@
 <template>
-  <div class="dropzone" :class="[isDragover ? 'dragover' : '']" @dragover="dragenter" @dragleave="dragleave" @dragover.prevent @drop="drop">
-      <label class="label" for="file"> Drag'n drop or <strong class="selectSpan">select</strong> PDF-files here</label>
-      <input type="file" id="file" name="file" class="fileinput" accept="application/pdf,.pdf" multiple @change="onChange()" ref="file">
+  <div
+    class="dropzone"
+    :class="[isDragover ? 'dragover' : '']"
+    @dragover="dragenter"
+    @dragleave="dragleave"
+    @dragover.prevent
+    @drop="drop"
+  >
+    <label class="label" for="file">
+      Drag'n drop or <strong class="selectSpan">select</strong> PDF-files
+      here</label
+    >
+    <input
+      type="file"
+      name="file"
+      class="fileinput"
+      accept="application/pdf,.pdf"
+      multiple
+      @change="onChange()"
+      ref="file"
+    />
   </div>
-  
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import { defineComponent } from "vue";
 
 export default defineComponent({
   data() {
     return {
-      isDragover: false
-    }
+      isDragover: false,
+    };
   },
   methods: {
     onChange() {
-      const fileElem = (this.$refs.file as HTMLInputElement);
+      const fileElem = this.$refs.file as HTMLInputElement;
       const filelist = fileElem.files;
-      this.$emit('filesSelected', filelist);
+      this.$emit("filesSelected", filelist);
     },
-    dragenter(e:DragEvent) {
+    dragenter(e: DragEvent) {
       this.isDragover = true;
     },
-    dragleave(e:DragEvent) {
+    dragleave(e: DragEvent) {
       this.isDragover = false;
     },
-    drop(e:DragEvent) {
+    drop(e: DragEvent) {
       e.preventDefault(); // prevent from open files in new tab
       this.isDragover = false;
       this.$refs.file.files = e.dataTransfer.files;
       this.onChange();
-    }
-  }
-})
+    },
+  },
+});
 </script>
 
 
 <style scoped>
-
 .dropzone {
   display: flex;
   justify-content: center;
@@ -54,7 +70,7 @@ export default defineComponent({
   color: #fff;
 }
 
-.selectSpan:hover{
+.selectSpan:hover {
   cursor: pointer;
 }
 
@@ -62,5 +78,4 @@ export default defineComponent({
   visibility: hidden;
   position: absolute;
 }
-
 </style>

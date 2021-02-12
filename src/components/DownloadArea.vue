@@ -1,38 +1,46 @@
 <template>
   <div>
     <!-- <h3>Stripped PDFs</h3> -->
-    <a v-if="zip.state == 1" download="stripped-pdf.zip" class="face-button" :href="zip.result">
-        <div class="face-primary">Download as .zip</div>
-        <div class="face-secondary">Size: {{ Math.round(zip.size/10000) / 100}} mb</div>
-      </a>
+    <a
+      v-if="zip.state == 1"
+      download="stripped-pdfs.zip"
+      class="face-button"
+      :href="zip.result"
+    >
+      <div class="face-primary">Download as .zip</div>
+      <div class="face-secondary">
+        Size: {{ Math.round(zip.size / 10000) / 100 }} mb
+      </div>
+    </a>
 
     <div style="max-height: calc(50vh - 123px); overflow: auto">
       <div class="card__details">
         <ul>
           <li v-for="item in pdfFiles" :key="item.id">
-          {{ item.name }}
-            <a v-if="item.result" :download="item.name" :href="item.result">Download</a>
+            {{ item.name }}
+            <a v-if="item.result" :download="item.name" :href="item.result">
+              Download
+            </a>
           </li>
         </ul>
       </div>
     </div>
 
-  <a class="resetbtn" @click="$emit('reset')" > Strip again </a>
+    <a class="resetbtn" @click="$emit('reset')"> Strip again </a>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  props: ['pdfFiles', 'zip'],
-})
+  props: ["pdfFiles", "zip"],
+});
 </script>
 
 
 <style scoped>
-
-  .card__details {
+.card__details {
   font-family: "Inconsolata", monospace;
   padding: 1rem 0rem;
 }
@@ -84,21 +92,20 @@ export default defineComponent({
 
 a.resetbtn {
   display: inline-block;
-  padding:0.35em 1.2em;
-  margin:2rem 0.3em 2.3em ;
+  padding: 0.35em 1.2em;
+  margin: 2rem 0.3em 2.3em;
   border: #0011c2 2px solid;
-  border-radius:0.12em;
+  border-radius: 0.12em;
   box-sizing: border-box;
-  text-decoration:none;
-  color:#0011c2;
-  text-align:center;
+  text-decoration: none;
+  color: #0011c2;
+  text-align: center;
   transition: all 0.2s;
 }
 
-a.resetbtn:hover{
+a.resetbtn:hover {
   color: #fff;
   background-color: #0011c2;
   cursor: pointer;
 }
-
 </style>

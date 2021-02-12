@@ -3,50 +3,80 @@
 
   <div class="artboard">
     <div class="card">
-
-      <div :class="[processDone == 100 ? 'card__side--back_active' : '']" class="card__side card__side--back">
-        <DownloadArea :pdfFiles="pdfFiles" :zip="zipping" @reset="() => processDone = 0"/>
+      <div
+        :class="[processDone == 100 ? 'card__side--back_active' : '']"
+        class="card__side card__side--back"
+      >
+        <DownloadArea
+          :pdfFiles="pdfFiles"
+          :zip="zipping"
+          @reset="() => (processDone = 0)"
+        />
       </div>
 
-      <div :class="[processDone == 100 ? 'card__side--front_active' : '', processDone > 0 ? 'toProgressbar' : '']" class="card__side card__side--front">
-        <div class="progress-done" :class="[processDone == 0 ? 'hideProgressBar' : '']" :style="{'width': processDone + '%'}">
-        </div>
-        <DragnDrop :class="[processDone > 0 ? 'hideDragnDrop' : '']" @filesSelected="onFilesSelected" />
+      <div
+        :class="[
+          processDone == 100 ? 'card__side--front_active' : '',
+          processDone > 0 ? 'toProgressbar' : '',
+        ]"
+        class="card__side card__side--front"
+      >
+        <div
+          class="progress-done"
+          :class="[processDone == 0 ? 'hideProgressBar' : '']"
+          :style="{ width: processDone + '%' }"
+        ></div>
+        <DragnDrop
+          :class="[processDone > 0 ? 'hideDragnDrop' : '']"
+          @filesSelected="onFilesSelected"
+        />
       </div>
     </div>
   </div>
-
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { PDFArray, PDFDict, PDFDocument, PDFName, PDFNumber, PDFObject } from "pdf-lib";
+import {
+  PDFArray,
+  PDFDict,
+  PDFDocument,
+  PDFName,
+  PDFNumber,
+  PDFObject,
+} from "pdf-lib";
 import JSZip from "jszip";
 
-import DragnDrop from './DragnDrop.vue';
-import DownloadArea from './DownloadArea.vue';
+import DragnDrop from "./DragnDrop.vue";
+import DownloadArea from "./DownloadArea.vue";
 
-interface PDFResult { id: string; name: string; result?: string };
+interface PDFResult {
+  id: string;
+  name: string;
+  result?: string;
+}
 
 function usePdfLib() {
   /**
    * It finds the index of the last page of each defined page label of the PDF document. The only the found pages are returned.
-   * 
+   *
    * More information about page labels:
    * https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf#page=501&zoom=100,118,506
    * @returns PDFDocument with last pages of each label range
    */
   async function stripPdf(bytes: ArrayBuffer) {
     const pdfFile = await PDFDocument.load(bytes);
-    const pageLabels = <PDFDict> pdfFile.catalog.get(PDFName.of("PageLabels"));
+    const pageLabels = <PDFDict>pdfFile.catalog.get(PDFName.of("PageLabels"));
     if (!pageLabels) return;
-    const pageNumbers = <PDFObject[]>(<PDFArray> pageLabels.get(PDFName.of("Nums"))).asArray();
+    const pageNumbers = <PDFObject[]>(
+      (<PDFArray>pageLabels.get(PDFName.of("Nums"))).asArray()
+    );
     if (!pageNumbers) return;
 
     const pagesToKeep = new Set<number>();
     for (let i = 1; i < pageNumbers.length; i++) {
       const element = pageNumbers[i];
-      if(element instanceof PDFNumber) {
+      if (element instanceof PDFNumber) {
         // Page number - 1 ==> index
         // each page number == first index of label range ... page number - 1 == last index of previous label range
         pagesToKeep.add(element.asNumber() - 1);
@@ -68,22 +98,24 @@ function usePdfLib() {
 
   /**
    * Converts all striped PDF to one zip file.
-   * 
+   *
    * @returns URL to blob(with zip file) or undefined if less than 2 pdf got striped
    */
   async function zipFiles(files: PDFResult[]) {
     const zip = new JSZip();
 
-    for(let i = 0; i < files.length; i++){
-      if(files[i].result === undefined)
-        continue;
-      const blob = await fetch(files[i].result).then(r => r.blob());
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].result === undefined) continue;
+      const blob = await fetch(files[i].result).then((r) => r.blob());
       zip.file(files[i].name, blob);
     }
 
-    const resZip = await zip.generateAsync<"blob">({type: "blob", compression: "DEFLATE"});
+    const resZip = await zip.generateAsync<"blob">({
+      type: "blob",
+      compression: "DEFLATE",
+    });
 
-    return {url: window.URL.createObjectURL(resZip), size: resZip.size};
+    return { url: window.URL.createObjectURL(resZip), size: resZip.size };
   }
 
   return { stripPdf, zipFiles };
@@ -94,25 +126,29 @@ export default defineComponent({
     const pdfLib = usePdfLib();
     const pdfFiles = ref<PDFResult[]>([]);
 
-    const zipping = ref<{ state: number, result?: string, size?: number}>({state: -1});
-    const processDone = ref<number>(0); 
+    const zipping = ref<{ state: number; result?: string; size?: number }>({
+      state: -1,
+    });
+    const processDone = ref<number>(0);
 
     async function onFilesSelected(files: FileList) {
-
       pdfFiles.value.length = 0;
       zipping.value.state = -1;
 
-      if(files.length == 0)
-        return;
+      if (files.length == 0) return;
 
-      for (let i = 0; i < files.length; i++, processDone.value += 100/(files.length + 1)) {
+      for (
+        let i = 0;
+        i < files.length;
+        i++, processDone.value += 100 / (files.length + 1)
+      ) {
         const file = files.item(i);
 
         pdfFiles.value.push({
           id: "" + i,
           name: `stripped-${file.name}`,
         });
-        
+
         const strippedPdf = await pdfLib.stripPdf(await file.arrayBuffer());
         if (strippedPdf) {
           const result = new Blob([await strippedPdf.save()], {
@@ -126,7 +162,7 @@ export default defineComponent({
         }
       }
 
-      if(zipping.value.state === 0) {
+      if (zipping.value.state === 0) {
         const res = await pdfLib.zipFiles(pdfFiles.value);
         zipping.value.result = res.url;
         zipping.value.size = res.size;
@@ -140,18 +176,17 @@ export default defineComponent({
       onFilesSelected,
       pdfFiles,
       zipping,
-      processDone
+      processDone,
     };
   },
   components: {
     DragnDrop,
-    DownloadArea
-  }
+    DownloadArea,
+  },
 });
 </script>
 
 <style scoped>
-
 /* Reset */
 *,
 *::after,
@@ -186,10 +221,14 @@ body {
   box-sizing: border-box;
 }
 
-.progress-done{
-  background: rgb(86,204,242);
+.progress-done {
+  background: rgb(86, 204, 242);
   /* background: linear-gradient(90deg, rgba(86,204,242,1) 0%, rgba(47,128,237,1) 100%); */
-  background: linear-gradient(90deg, rgba(47,128,237,1) 0%, rgba(0,17,194,1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(47, 128, 237, 1) 0%,
+    rgba(0, 17, 194, 1) 100%
+  );
   border-radius: 10px;
   height: 100%;
   transition: 300ms;
@@ -198,7 +237,7 @@ body {
   visibility: hidden;
   position: absolute;
 }
-.hideDragnDrop{
+.hideDragnDrop {
   color: transparent;
 }
 
@@ -256,12 +295,11 @@ body {
 }
 
 .card__side--front_active {
-  background-color: 'red';
+  background-color: "red";
   transform: rotateY(-180deg);
 }
 .card__side--back_active {
-  background-color: 'red';
+  background-color: "red";
   transform: rotateY(0deg);
 }
-
 </style>

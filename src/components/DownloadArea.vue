@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- <h3>Stripped PDFs</h3> -->
-    <a v-if="zip.state == 1" download="stripped-pdf" class="face-button" :href="zip.result">
+    <a v-if="zip.state == 1" download="stripped-pdf.zip" class="face-button" :href="zip.result">
         <div class="face-primary">Download as .zip</div>
         <div class="face-secondary">Size: {{ Math.round(zip.size/10000) / 100}} mb</div>
       </a>
@@ -52,9 +52,6 @@ export default defineComponent({
 }
 
 /* Button */
-@import url("//fonts.googleapis.com/css?family=Roboto:500");
-@import url("//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css");
-
 .face-button {
   height: 50px;
   display: inline-block;

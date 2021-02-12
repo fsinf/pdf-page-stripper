@@ -1,38 +1,30 @@
 <template>
-  <form action="#">
-    <h3>PDF Stripper</h3>
-    <div class="file-field input-field">
-      <div class="btn card">
-        <span>PDFs</span>
-        <input
-          type="file"
-          accept="application/pdf,.pdf"
-          multiple
-          @change="onFilesSelected($event)"
-        />
+  <h2>PDF Stripper</h2>
+
+  <div class="artboard">
+    <div class="card">
+
+      <div :class="[processDone == 100 ? 'card__side--back_active' : '']" class="card__side card__side--back">
+        <DownloadArea :pdfFiles="pdfFiles" :zip="zipping" @reset="() => processDone = 0"/>
+      </div>
+
+      <div :class="[processDone == 100? 'card__side--front_active' : '', processDone > 0 ? 'toProgressbar' : '']" class="card__side card__side--front">
+        <div class="progress-done" :class="[processDone == 0 ? 'hideProgressBar' : '']" :style="{'width': processDone + '%'}">
+        </div>
+        <DragnDrop :class="[processDone > 0 ? 'hideDragnDrop' : '']" @filesSelected="onFilesSelected" />
       </div>
     </div>
-  </form>
-
-  <div>
-    <h3>Stripped PDFs</h3>
-    <p v-if="zipping.ready == 0"> ZIP in process ... </p>
-    <a v-if="zipping.ready == 1" download="stripped-pdf" :href="zipping.result"> Download as ZIP </a>
-    <ul>
-      <li v-for="item in pdfFiles" :key="item.id">
-        {{ item.name }}
-        <a v-if="item.result" :download="item.name" :href="item.result"
-          >Download</a
-        >
-      </li>
-    </ul>
   </div>
+
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { PDFArray, PDFDict, PDFDocument, PDFName, PDFNumber, PDFObject } from "pdf-lib";
 import JSZip from "jszip";
+
+import DragnDrop from './DragnDrop.vue';
+import DownloadArea from './DownloadArea.vue';
 
 interface PDFResult { id: string; name: string; result?: string };
 
@@ -90,7 +82,8 @@ function usePdfLib() {
     }
 
     const resZip = await zip.generateAsync<"blob">({type: "blob", compression: "DEFLATE"});
-    return window.URL.createObjectURL(resZip);
+
+    return {url: window.URL.createObjectURL(resZip), size: resZip.size};
   }
 
   return { stripPdf, zipFiles };
@@ -101,13 +94,18 @@ export default defineComponent({
     const pdfLib = usePdfLib();
     const pdfFiles = ref<PDFResult[]>([]);
 
-    let zipping = ref<{ ready: number, result?: string}>({ready: -1});
+    const zipping = ref<{ state: number, result?: string, size?: number}>({state: -1});
+    const processDone = ref<number>(0); 
 
-    async function onFilesSelected(event: InputEvent) {
+    async function onFilesSelected(files: FileList) {
+
       pdfFiles.value.length = 0;
-      const files = (event.target as HTMLInputElement).files;
+      zipping.value.state = -1;
 
-      for (let i = 0; i < files.length; i++) {
+      if(files.length == 0)
+        return;
+
+      for (let i = 0; i < files.length; i++, processDone.value += 100/(files.length + 1)) {
         const file = files.item(i);
 
         pdfFiles.value.push({
@@ -122,23 +120,205 @@ export default defineComponent({
           });
           pdfFiles.value[i].result = window.URL.createObjectURL(result);
 
-          zipping.value.ready = 0;
+          zipping.value.state = 0;
         } else {
           pdfFiles.value[i].name += " - found nothing to strip";
         }
       }
 
-      if(zipping.value.ready === 0) {
-        zipping.value.result = await pdfLib.zipFiles(pdfFiles.value);
-        zipping.value.ready = 1;
+      if(zipping.value.state === 0) {
+        const res = await pdfLib.zipFiles(pdfFiles.value);
+        zipping.value.result = res.url;
+        zipping.value.size = res.size;
+        zipping.value.state = 1;
       }
+
+      processDone.value = 100;
     }
 
     return {
       onFilesSelected,
       pdfFiles,
       zipping,
+      processDone
     };
   },
+  components: {
+    DragnDrop,
+    DownloadArea
+  }
 });
 </script>
+
+<style scoped>
+
+/* Reset */
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+@media (max-width: 75em) {
+  html {
+    font-size: 56.25%;
+  }
+}
+@media (max-width: 56.25em) {
+  html {
+    font-size: 50%;
+  }
+}
+@media (min-width: 112.5em) {
+  html {
+    font-size: 75%;
+  }
+}
+
+body {
+  height: 100vh;
+  background-color: #ece0e8;
+  box-sizing: border-box;
+}
+
+.progress-done{
+  background: rgb(86,204,242);
+  /* background: linear-gradient(90deg, rgba(86,204,242,1) 0%, rgba(47,128,237,1) 100%); */
+  background: linear-gradient(90deg, rgba(47,128,237,1) 0%, rgba(0,17,194,1) 100%);
+  border-radius: 10px;
+  height: 100%;
+  transition: 300ms;
+}
+.hideProgressBar {
+  visibility: hidden;
+  display: block;
+  position: absolute;
+}
+
+.hideDragnDrop{
+  color: transparent;
+}
+
+/* Card stylings */
+.artboard {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  height: 100%;
+  position: relative;
+}
+@media (max-width: 37.5em) {
+  .artboard {
+    padding: 1rem;
+  }
+}
+
+.card {
+  flex: initial;
+  position: relative;
+  min-width: 30rem;
+  width: 70%;
+  -moz-perspective: 200rem;
+  perspective: 200rem;
+  margin: 2rem;
+}
+.card__side {
+  transition: all 0.8s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.15);
+}
+
+
+.card__side--back {
+  background-color: #fff;
+  transform: rotateY(180deg);
+}
+
+.card__side--front {
+  height: 75px;
+}
+
+.toProgressbar {
+  margin-top: 25px;
+  height: 25px;
+  box-shadow: 0.3rem 0.4rem 2rem rgba(0, 0, 0, 0.25);
+}
+
+.card__side--front_active {
+  background-color: 'red';
+  transform: rotateY(-180deg);
+}
+.card__side--back_active {
+  background-color: 'red';
+  transform: rotateY(0deg);
+}
+
+@media only screen and (max-width: 37.5em), only screen and (hover: none) {
+  .card {
+    height: auto;
+    border-radius: 3px;
+    background-color: #fff;
+    box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.15);
+  }
+  .card__side {
+    height: auto;
+    position: relative;
+    box-shadow: none;
+  }
+  .card__side--front {
+    clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
+  }
+  .card__side--back {
+    transform: rotateY(0);
+  }
+  .card:hover .card__side--front {
+    transform: rotateY(0);
+  }
+  .card__details {
+    padding: 3rem 2rem;
+  }
+  .card__details ul {
+    list-style: none;
+    width: 80%;
+    margin: 0 auto;
+  }
+  .card__details ul li {
+    text-align: center;
+    font-size: 1.8rem;
+    padding: 1rem;
+  }
+  .card__details ul li:not(:last-child) {
+    border-bottom: 1px solid #eee;
+  }
+  .card__theme {
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: translate(0);
+    width: 100%;
+    padding: 5rem 4rem 1.5rem 4rem;
+    text-align: right;
+  }
+  .card__theme-box {
+    margin-bottom: 1.5rem;
+  }
+  .card__title {
+    font-size: 4rem;
+  }
+}
+
+</style>

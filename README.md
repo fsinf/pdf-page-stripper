@@ -2,6 +2,8 @@
 
 Strips useless stuff from TU Vienna PDFs. [View it online here](https://fsinf.github.io/pdf-page-stripper/)
 
+Essentially it goes through every single slide, and removes those that are redundant duplicates.
+
 Other useful software for the TU Vienna can be found [here](https://wiki.fsinf.at/wiki/Useful_Software).
 
 ## Developer Information

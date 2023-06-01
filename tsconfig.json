@@ -5,9 +5,7 @@
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
+    "lib": ["esnext", "esnext.asynciterable", "dom"],
     "allowJs": true,
     "outDir": "dist"
   }

@@ -35,6 +35,7 @@ const file = ref<HTMLInputElement>(null);
 
 function onChange() {
   const filelist = file.value.files;
+  if (!filelist || filelist.length === 0) return;
   emits("filesSelected", filelist);
 }
 function dragenter(e: DragEvent) {

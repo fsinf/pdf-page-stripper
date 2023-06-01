@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <a class="resetbtn" @click="$emit('reset')"> Strip again </a>
+    <a class="resetbtn" @click="$emit('reset')"> Strip more </a>
   </div>
 </template>
 
@@ -41,7 +41,6 @@ export default defineComponent({
   props: ["pdfFiles", "zip"],
 });
 </script>
-
 
 <style scoped>
 .card__details {

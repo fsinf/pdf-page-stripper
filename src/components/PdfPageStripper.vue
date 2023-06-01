@@ -45,7 +45,7 @@ import {
   PDFNumber,
   PDFObject,
 } from "pdf-lib";
-import JSZip from "jszip";
+import * as JSZip from "jszip";
 
 import DragnDrop from "./DragnDrop.vue";
 import DownloadArea from "./DownloadArea.vue";

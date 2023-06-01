@@ -102,11 +102,12 @@ function usePdfLib() {
    * @returns URL to blob(with zip file) or undefined if less than 2 pdf got striped
    */
   async function zipFiles(files: PDFResult[]) {
-    const zip = new JSZip();
+    const zip = new JSZip.default();
 
     for (let i = 0; i < files.length; i++) {
-      if (files[i].result === undefined) continue;
-      const blob = await fetch(files[i].result).then((r) => r.blob());
+      const result = files[i].result;
+      if (result === undefined) continue;
+      const blob = await fetch(result).then((r) => r.blob());
       zip.file(files[i].name, blob);
     }
 

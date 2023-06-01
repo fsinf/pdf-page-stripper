@@ -31,10 +31,10 @@ const emits = defineEmits<{
 
 // ref wraps them in proxy objects
 const isDragover = ref(false);
-const file = ref<HTMLInputElement>(null);
+const file = ref<HTMLInputElement | null>(null);
 
 function onChange() {
-  const filelist = file.value.files;
+  const filelist = file.value?.files;
   if (!filelist || filelist.length === 0) return;
   emits("filesSelected", filelist);
 }
@@ -48,7 +48,8 @@ function drop(e: DragEvent) {
   // prevent from opening files in new tab
   e.preventDefault();
   isDragover.value = false;
-  file.value.files = e.dataTransfer.files;
+  if (file.value === null) return;
+  file.value.files = e.dataTransfer?.files ?? null;
   onChange();
 }
 

@@ -22,37 +22,37 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 
-export default defineComponent({
-  data() {
-    return {
-      isDragover: false,
-    };
-  },
-  methods: {
-    onChange() {
-      const fileElem = this.$refs.file as HTMLInputElement;
-      const filelist = fileElem.files;
-      this.$emit("filesSelected", filelist);
-    },
-    dragenter(e: DragEvent) {
-      this.isDragover = true;
-    },
-    dragleave(e: DragEvent) {
-      this.isDragover = false;
-    },
-    drop(e: DragEvent) {
-      e.preventDefault(); // prevent from open files in new tab
-      this.isDragover = false;
-      this.$refs.file.files = e.dataTransfer.files;
-      this.onChange();
-    },
-  },
-});
+const emits = defineEmits<{
+  (event: "filesSelected", files: FileList): void;
+}>();
+
+// ref wraps them in proxy objects
+const isDragover = ref(false);
+const file = ref<HTMLInputElement>(null);
+
+function onChange() {
+  const filelist = file.value.files;
+  emits("filesSelected", filelist);
+}
+function dragenter(e: DragEvent) {
+  isDragover.value = true;
+}
+function dragleave(e: DragEvent) {
+  isDragover.value = false;
+}
+function drop(e: DragEvent) {
+  // prevent from opening files in new tab
+  e.preventDefault();
+  isDragover.value = false;
+  file.value.files = e.dataTransfer.files;
+  onChange();
+}
+
+// all variables and functions are automatically exposed to the template
 </script>
-
 
 <style scoped>
 .dropzone {

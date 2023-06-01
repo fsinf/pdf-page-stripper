@@ -1,20 +1,14 @@
 {
+  "extends": "@vue/tsconfig/tsconfig.json",
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "exclude": ["src/**/__tests__/*", "test/**/*"],
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "strict": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "allowJs": true,
-    "checkJs": true,
-    "resolveJsonModule": true,
+    "composite": true,
     "baseUrl": ".",
-    "isolatedModules": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "outDir": "./dist"
-  },
-  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.vue"],
-  "exclude": ["node_modules"]
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "allowJs": true,
+    "outDir": "dist"
+  }
 }
